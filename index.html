@@ -1,87 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Music Player - Song Details</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Music Player</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
   <style>
     body {
       font-family: 'Roboto', sans-serif;
       background-color: #121212;
       color: #fff;
-      margin: 0;
-      padding: 0;
-    }
-
-    #app {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .artist-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 40px;
     }
 
     .artist-picture {
       width: 150px;
       height: 150px;
       border-radius: 50%;
-      margin-bottom: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      cursor: pointer;
-    }
-
-    .album-title {
-      font-size: 18px;
-      font-weight: 500;
-      margin-bottom: 8px;
-      color: #e09f3e;
-    }
-
-    .song-item {
-      transition: color 0.2s ease-in-out;
-    }
-
-    .song-item:hover {
-      color: #b3b3b3;
-      cursor: pointer;
-    }
-
-    .favorite-btn {
-      background-color: #ff5e5e;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 5px;
-      margin-left: 10px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    .favorite-btn:hover {
-      background-color: #ff3e3e;
-    }
-
-    .song-details {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      width: 80%;
-      margin-top: 20px;
-      background: #2a2a2a;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }
 
     .progress-bar {
-      width: 100%;
-      height: 10px;
       background-color: #3a3a3a;
-      margin-top: 15px;
       border-radius: 5px;
       overflow: hidden;
     }
@@ -93,55 +31,62 @@
     }
     #h1{
       text-align: center;
-      font-size: 50px;
-      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      font-size: 40px;
     }
+
   </style>
 </head>
-<body>
-  <h1 id="h1">Lihour Music Player UwU</h1>
-  <div id="app">
+<h1 id="h1" >Lihour Music Player UwU</h1>
+<body class="flex flex-col items-center p-4">
+  <div id="app" class="w-full max-w-md mx-auto">
     <!-- Menu Buttons -->
-    <div class="mb-4">
-      <button @click="playAllSongs" class="px-4 py-2 bg-blue-500 rounded-md text-white mr-2">Play All Songs</button>
-      <button @click="playFavorites" class="px-4 py-2 bg-purple-500 rounded-md text-white">Play Favorites</button>
+    <div class="flex flex-col sm:flex-row gap-4 mb-4">
+      <button @click="playAllSongs" class="px-4 py-2 bg-blue-500 rounded-md text-white w-full sm:w-auto">Play All Songs</button>
+      <button @click="playFavorites" class="px-4 py-2 bg-purple-500 rounded-md text-white w-full sm:w-auto">Play Favorites</button>
     </div>
+    
 
     <!-- Artist Sections -->
-    <div class="flex flex-wrap justify-center">
-      <div class="artist-section mr-8 mb-8">
-        <img src="fuji pf.jpg" class="artist-picture" />
+    <div class="flex flex-col gap-8 items-center">
+      <div class="artist-section text-center">
+        <img src="fuji pf.jpg" class="artist-picture mx-auto" />
         <div v-for="(album, index) in fujiKazeAlbums" :key="index" class="mb-4">
-          <h3 class="album-title">{{ album.title }}</h3>
+          <h3 class="album-title text-lg text-yellow-400">{{ album.title }}</h3>
           <ul>
-            <li v-for="(song, songIndex) in album.songs" :key="songIndex" class="song-item" @click="playSong(song)">{{ song.title }}</li>
+            <li v-for="(song, songIndex) in album.songs" :key="songIndex" class="song-item cursor-pointer hover:text-gray-400" @click="playSong(song)">
+              {{ song.title }}
+            </li>
           </ul>
         </div>
       </div>
 
-      <div class="artist-section mb-8">
-        <img src="d4vd pf.jpg" class="artist-picture" />
+      <div class="artist-section text-center">
+        <img src="d4vd pf.jpg" class="artist-picture mx-auto" />
         <div v-for="(album, index) in d4vdAlbums" :key="index" class="mb-4">
-          <h3 class="album-title">{{ album.title }}</h3>
+          <h3 class="album-title text-lg text-yellow-400">{{ album.title }}</h3>
           <ul>
-            <li v-for="(song, songIndex) in album.songs" :key="songIndex" class="song-item" @click="playSong(song)">{{ song.title }}</li>
+            <li v-for="(song, songIndex) in album.songs" :key="songIndex" class="song-item cursor-pointer hover:text-gray-400" @click="playSong(song)">
+              {{ song.title }}
+            </li>
           </ul>
         </div>
       </div>
     </div>
 
     <!-- Song Details Section -->
-    <div v-if="currentSong" class="song-details">
-      <img :src="currentSong.cover" class="w-32 h-32 rounded-md" />
+    <div v-if="currentSong" class="song-details mt-8 p-4 bg-gray-800 rounded-lg text-center">
+      <img :src="currentSong.cover" class="w-32 h-32 sm:w-48 sm:h-48 mx-auto rounded-md" />
       <h3 class="text-xl mt-4">{{ currentSong.title }}</h3>
-      <audio id="audioPlayer" :src="currentSong.url" controls autoplay></audio>
-      <div class="player-controls mt-4">
+      <audio id="audioPlayer" :src="currentSong.url" controls autoplay class="w-full mt-4"></audio>
+      <div class="player-controls mt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
         <button @click="togglePlayPause" class="px-4 py-2 bg-blue-500 rounded-md text-white">{{ isPlaying ? 'Pause' : 'Play' }}</button>
         <button @click="toggleRepeat" class="px-4 py-2 bg-green-500 rounded-md text-white">{{ isRepeat ? 'Repeat: On' : 'Repeat: Off' }}</button>
         <button @click="playNext" class="px-4 py-2 bg-yellow-500 rounded-md text-white">Next</button>
-        <button @click="toggleFavorite(currentSong)" class="favorite-btn">{{ isFavorite(currentSong) ? 'Unfavorite' : 'Favorite' }}</button>
+        <button @click="toggleFavorite(currentSong)" class="favorite-btn bg-red-500 px-4 py-2 rounded-md text-white">
+          {{ isFavorite(currentSong) ? 'Unfavorite' : 'Favorite' }}
+        </button>
       </div>
-      <div class="progress-bar mt-4">
+      <div class="progress-bar mt-4 h-2 w-full">
         <div class="progress" :style="{ width: progress + '%' }"></div>
       </div>
     </div>
@@ -150,7 +95,9 @@
     <div v-if="favorites.length > 0" class="mt-8 text-center">
       <h3 class="text-lg mb-4">Favorites</h3>
       <ul>
-        <li v-for="(song, index) in favorites" :key="index" class="song-item" @click="playSong(song)">{{ song.title }}</li>
+        <li v-for="(song, index) in favorites" :key="index" class="song-item cursor-pointer hover:text-gray-400" @click="playSong(song)">
+          {{ song.title }}
+        </li>
       </ul>
     </div>
   </div>
@@ -193,7 +140,7 @@
         progress: 0,
         isRepeat: false,
         favorites: [],
-        playFavoritesOnly: false // New data property to control favorites-only mode
+        playFavoritesOnly: false
       },
       methods: {
         playSong(song) {
