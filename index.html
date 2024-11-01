@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Music Player - Song Details</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #121212;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .artist-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .artist-picture {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+    }
+
+    .album-title {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #e09f3e;
+    }
+
+    .song-item {
+      transition: color 0.2s ease-in-out;
+    }
+
+    .song-item:hover {
+      color: #b3b3b3;
+      cursor: pointer;
+    }
+
+    .favorite-btn {
+      background-color: #ff5e5e;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      margin-left: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .favorite-btn:hover {
+      background-color: #ff3e3e;
+    }
+
+    .song-details {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      width: 80%;
+      margin-top: 20px;
+      background: #2a2a2a;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background-color: #3a3a3a;
+      margin-top: 15px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      background-color: #e09f3e;
+      transition: width 0.1s;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Menu Buttons -->
+    <div class="mb-4">
+      <button @click="playAllSongs" class="px-4 py-2 bg-blue-500 rounded-md text-white mr-2">Play All Songs</button>
+      <button @click="playFavorites" class="px-4 py-2 bg-purple-500 rounded-md text-white">Play Favorites</button>
+    </div>
+
+    <!-- Artist Sections -->
+    <div class="flex flex-wrap justify-center">
+      <div class="artist-section mr-8 mb-8">
+        <img src="fuji pf.jpg" class="artist-picture" />
+        <div v-for="(album, index) in fujiKazeAlbums" :key="index" class="mb-4">
+          <h3 class="album-title">{{ album.title }}</h3>
+          <ul>
+            <li v-for="(song, songIndex) in album.songs" :key="songIndex" class="song-item" @click="playSong(song)">{{ song.title }}</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="artist-section mb-8">
+        <img src="d4vd pf.jpg" class="artist-picture" />
+        <div v-for="(album, index) in d4vdAlbums" :key="index" class="mb-4">
+          <h3 class="album-title">{{ album.title }}</h3>
+          <ul>
+            <li v-for="(song, songIndex) in album.songs" :key="songIndex" class="song-item" @click="playSong(song)">{{ song.title }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Song Details Section -->
+    <div v-if="currentSong" class="song-details">
+      <img :src="currentSong.cover" class="w-32 h-32 rounded-md" />
+      <h3 class="text-xl mt-4">{{ currentSong.title }}</h3>
+      <audio id="audioPlayer" :src="currentSong.url" controls autoplay></audio>
+      <div class="player-controls mt-4">
+        <button @click="togglePlayPause" class="px-4 py-2 bg-blue-500 rounded-md text-white">{{ isPlaying ? 'Pause' : 'Play' }}</button>
+        <button @click="toggleRepeat" class="px-4 py-2 bg-green-500 rounded-md text-white">{{ isRepeat ? 'Repeat: On' : 'Repeat: Off' }}</button>
+        <button @click="playNext" class="px-4 py-2 bg-yellow-500 rounded-md text-white">Next</button>
+        <button @click="toggleFavorite(currentSong)" class="favorite-btn">{{ isFavorite(currentSong) ? 'Unfavorite' : 'Favorite' }}</button>
+      </div>
+      <div class="progress-bar mt-4">
+        <div class="progress" :style="{ width: progress + '%' }"></div>
+      </div>
+    </div>
+
+    <!-- Favorites List -->
+    <div v-if="favorites.length > 0" class="mt-8 text-center">
+      <h3 class="text-lg mb-4">Favorites</h3>
+      <ul>
+        <li v-for="(song, index) in favorites" :key="index" class="song-item" @click="playSong(song)">{{ song.title }}</li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        fujiKazeAlbums: [
+          {
+            title: "Fuji Kaze - First Album",
+            songs: [
+              { title: "Feelin’ Go(o)d", url: 'feelinggood.mp3', cover: 'feelinggood-cover.jpg' },
+              { title: "Hana", url: 'hana.mp3', cover: 'hana-cover.jpg' },
+              { title: "Workin’ Hard", url: 'workinghard.mp3', cover: 'workinghard-cover.jpg' }
+            ]
+          },
+          {
+            title: "Fuji Kaze - Second Album",
+            songs: [
+              { title: "Kaerou", url: 'kaerou.mp3', cover: 'kearou-cover.jpg' },
+              { title: "Overflowing", url: 'overflow.mp3', cover: 'overflow-cover.jpg' },
+              { title: "Kirari", url: 'karari.mp3', cover: 'karari-cover.jpg' }
+            ]
+          }
+        ],
+        d4vdAlbums: [
+          {
+            title: "D4VD - EP1",
+            songs: [
+              { title: "Romantic Homicide", url: 'home.mp3', cover: 'home-cover.jpg' },
+              { title: "Here With Me", url: 'herewithme.mp3', cover: 'herewithme-cover.jpg' },
+              { title: "There Goes My Baby", url: 'gobaby.mp3', cover: 'go baby-cover.jpg' }
+            ]
+          }
+        ],
+        currentSong: null,
+        isPlaying: false,
+        progress: 0,
+        isRepeat: false,
+        favorites: [],
+        playFavoritesOnly: false // New data property to control favorites-only mode
+      },
+      methods: {
+        playSong(song) {
+          this.currentSong = song;
+          this.isPlaying = true;
+          const audio = document.getElementById("audioPlayer");
+          audio.play();
+          this.updateProgress();
+          audio.addEventListener("timeupdate", this.updateProgress);
+          audio.addEventListener("ended", this.onSongEnd);
+        },
+        togglePlayPause() {
+          const audio = document.getElementById("audioPlayer");
+          if (audio.paused) {
+            audio.play();
+            this.isPlaying = true;
+          } else {
+            audio.pause();
+            this.isPlaying = false;
+          }
+        },
+        toggleRepeat() {
+          this.isRepeat = !this.isRepeat;
+        },
+        playNext() {
+          const songList = this.playFavoritesOnly ? this.favorites : this.getAllSongs();
+          const currentIndex = songList.findIndex(song => song.url === this.currentSong.url);
+          const nextIndex = (currentIndex + 1) % songList.length;
+          this.playSong(songList[nextIndex]);
+        },
+        onSongEnd() {
+          if (this.isRepeat) {
+            this.playSong(this.currentSong);
+          } else {
+            this.playNext();
+          }
+        },
+        updateProgress() {
+          const audio = document.getElementById("audioPlayer");
+          this.progress = (audio.currentTime / audio.duration) * 100;
+        },
+        toggleFavorite(song) {
+          const index = this.favorites.findIndex(fav => fav.url === song.url);
+          if (index === -1) {
+            this.favorites.push(song);
+          } else {
+            this.favorites.splice(index, 1);
+          }
+        },
+        isFavorite(song) {
+          return this.favorites.some(fav => fav.url === song.url);
+        },
+        playFavorites() {
+          this.playFavoritesOnly = true;
+          if (this.favorites.length > 0) {
+            this.playSong(this.favorites[0]);
+          }
+        },
+        playAllSongs() {
+          this.playFavoritesOnly = false;
+          const allSongs = this.getAllSongs();
+          this.playSong(allSongs[0]);
+        },
+        getAllSongs() {
+          return [...this.fujiKazeAlbums.flatMap(album => album.songs), ...this.d4vdAlbums.flatMap(album => album.songs)];
+        }
+      }
+    });
+  </script>
+</body>
+</html>
